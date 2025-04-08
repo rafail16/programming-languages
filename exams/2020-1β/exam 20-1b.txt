@@ -1,0 +1,178 @@
+﻿
+Εξέταση Γλώσσες Προγραμματισμού 1
+
+
+Ερώτημα 1)
+Η γραμματική ειναι διφορούμενη : Πρόταση με 2 συντακτικά δεντρα : () () ()
+Παραθέτω φωτογραφία απο σχεδιάγραμμα με τα 2 διαφορετικά συντακτικά δέντρα
+Παραθέτω
+
+
+Αλλαγή για να γίνει μη διφορούμενη :
+<S> ::= <S><A>| <A>
+<A> ::= (<S>)| ()
+
+
+
+
+
+
+Ερώτημα 2) a) Δεν ειναι tail recursive ,για να γίνει tail recursive :
+
+
+Non tail recursive :
+fun c ls =
+ let fun d [] n = n
+ | d (42 :: t) n = d t (n + 1)
+ | d (h :: t) n = Int.max (n, d t 0)
+ in d ls 0
+ end
+
+Corrected Answer:
+
+fun c ls =
+    let fun d [] n prev_max = if n > prev_max then n else prev_max
+	  | d (42 :: t) n prev_max = d t (n + 1) prev_max
+	  | d (h :: t) n prev_max = d t 0 (Int.max (n,prev_max))
+    in d ls 0 0
+    end
+
+
+
+
+2β) Γίνεται να τυπώσει banana ετσι : f("na","ba")
+2γ) Για static dispatch : ΑΜ3 42 ΑΜ1 ΑΜ2 ΑΜ3 42 (5 42 1 5 5 42)
+    Για dynamic dispatch : ΑΜ3 42 ΑΜ1 ΑΜ2 ΑΜ1 ΑΜ2 (4 42 1 5 1 5)
+
+
+2δ) Για στατική αποστολή : 1 5 5 5
+    Για δυναμική αποστολη : 1 5 5 5
+Ερώτημα 3) Πέρασμα παραμέτρων :
+
+ έχω ΑΜ2%5=0 ΑΜ3%4=1
+
+
+ α: έχω t[1]=1 t[0]=3 k=3 αρα  ΑΠΆΝΤΗΣΗ   :t[5]= {0,1,2,3,1} K=3
+ β: ΑΠΆΝΤΗΣΗ : tt[5]= {0,1,2,3,1} K=0
+ γ: Απάντηση : t[5] = {1,3,2,0,1} K=0
+
+
+
+
+Ερώτημα 4) Προγραμμα σε ML  RUNNING :
+
+fun reverselist [] Acc = Acc
+| reverselist (x::r) Acc = reverselist r (x::Acc)
+
+
+fun remove_element (list, element) =
+    case list of
+    [] => []
+      | list_head::list_tail => let val a = remove_element(list_tail, element)
+                       in
+                           if list_head = element
+                           then a
+                           else list_head::a
+                       end
+
+
+fun finddoublex x [] = (x,0)
+| finddoublex x (h::t) =
+let
+ val temp=2*x
+in
+ if temp=h then (x,h)
+ else finddoublex x t
+end
+
+fun doublepairs1 [] Acc = Acc
+| doublepairs1 (h::t) Acc =
+let
+ val (temp1,temp2)=finddoublex h t
+in
+ if temp2 =0 then doublepairs1 t Acc
+ else doublepairs1 t ((temp1,temp2)::Acc)
+end
+
+
+fun doublepairs l =
+let
+ val x=doublepairs1 l []
+in
+ reverselist x []
+end
+
+
+val x = doublepairs [1,2,3,4,5,7,8,14,21,39,42]
+
+
+
+
+
+
+
+
+Ερώτημα 5)
+Prolog Running :
+
+%a erwthma
+triadiko_01(n(T1,T2,T3), Zeros, Ones) :- triadiko_01(T1, Zeros1, Ones1),  triadiko_01(T2, Zeros2, Ones2),  triadiko_01(T3, Zeros3, Ones3), append([Zeros1, Zeros2, Zeros3], Zeros), append([Ones1, Ones2, Ones3], Ones).
+triadiko_01(1,[],[1]).
+triadiko_01(0,[0],[]).
+
+%b erwthma
+count_odd_parity(Tree, Count) :-
+    odd_parity(Tree, 0, Count). %call helper function
+
+odd_parity(n(T1, T2, T3), Temp, Count) :-
+    (   (number(T1),number(T2), number(T3)) ->(
+            Add1 is T1 + T2,
+            Add2 is Add1 + T3,
+            (   (Add2 =:= 1; Add2 =:= 3) -> ( %if we have odd number of ones we have parity node
+                    Count is Temp + 1
+                );
+            Count is Temp
+            )
+        )
+    );
+    (   \+(number(T1)) -> odd_parity(T1,  Temp, Count1); %if T1, T2 or T3 not numbers, go to the next node and add up the counters appropriately
+    Count1 = Temp
+    ),
+    (   \+(number(T2)) -> odd_parity(T2,  Count1, Count2);
+    Count2 = Count1
+    ),
+    (   \+(number(T3)) -> odd_parity(T3,  Count2, Count);
+    Count = Count2
+    ).
+
+
+
+
+
+
+Ερώτημα 6)
+Η πολυπλοκότητα του προγράμματος ειναι O(n) , η hash insert του hashmap ειναι amortized O(1) 1 φορά πέρασμα το string + 1 το hashmap O(n)
+# Python program to count all distinct substrings in a string
+# Ref : https://www.geeksforgeeks.org/count-number-of-distinct-substring-in-a-string/
+def count_substr(S,K):
+    # Put all distinct K-length substrings in a HashSet
+    result = set()
+    # Run over the characters of the string
+    for i in range(len(S)):
+        # Add each K-Length substring in Set
+	      if (i+K > len(S)): # If we reached the end of the string break;
+		       break;
+        result.add(S[i:i+K]);
+        # Return size of the HashSet
+    return len(result);
+
+# Driver Code
+if __name__ == '__main__':
+    S = "helloworld";
+    K = 3;
+    print(count_substr(S,K));
+    S = "banana";
+    K = 2;
+    print(count_substr(S,K));
+
+# This code has been contributed by 29AjayKumar

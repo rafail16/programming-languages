@@ -1,0 +1,167 @@
+
+Γλώσσες Προγραμματισμού 1
+Επαναληπτική εξέταση 
+
+α) Η γραμματική με τους 5 τελεστές γίνεται:
+<expr> ::= <expr> <mod> + | <expr> <mod> - | <mod>
+<mod> ::= <mod> <mult> % | <mult>
+<mult> ::= <mult> <fact> * | <mult> <fact> / | <fact>
+<fact> ::= (<expr>)| a | b | c
+
+β) Η γραμματική που έχουμε γράψει είναι μη διφορούμενη καθώς πάντα θα έχουμε ένα συντακτικό δέντρο για κάθε μία έκφραση της γλώσσας. Το δέντρο αυτό θα προεκτείνεται πάντοτε προς τα αριστερά το δέντρο που δημιουργείται από την έκφραση μας. 
+
+γ) Η γραμματική αφού προσθέσουμε και πρόσημα γίνεται:
+<expr> ::= <expr> <mod> + | <expr> <mod> - | <mod>
+<mod> ::= <mod> <mult> % | <mult>
+<mult> ::= <mult> <fact> * | <mult> <fact> / | <fact>
+<fact> ::= (<expr>)| <sign>
+<sign> ::= + <final> | - <final>
+<final> ::=  a | b | c
+
+δ) Δεν υπάρχει περίπτωση να εμφανιστεί το - + - a καθώς έστω ότι έχουμε - από το <expr> και μετά + από το <sign> τότε σίγουρα μετά θα μπει είτε a είτε παρένθεση οπότε δεν είναι δυνατό να έχουμε τέτοιο αποτέλεσμα.
+
+2)
+α)
+fun reverse([],z) = z
+    | reverse (x::xs,z) = reverse (xs,x::z)
+  fun enum low high acc=
+  if low <= high
+  then enum (low+1) high (low::acc)
+  else reverse (acc,[])
+
+β) β1) για static dispatch παίρνουμε: 42 ΑΜ3 42 ΑΜ3 ΑΜ1 ΑΜ2, δηλαδή 42 9 42 9 0 4
+β2) για dynamic dispatch παίρνουμε: 42 ΑΜ3 ΑΜ1 ΑΜ2 ΑΜ1 ΑΜ2, δηλαδή 42 9 0 4 0 4
+
+γ) γ1) για static scopes παίρνουμε: 9 4 4 42
+γ2) για dynamic scopes παιρνουμε: 9 4 42 42
+
+3)Για να είναι όμοιο με το call by value-result θα αντιγράψουμε
+τις τιμές από τις πραγματικές μεταβλητές σε τοπικές μεταβλητές, και όταν τελειώσουμε θα ξαναγράψουμε τα 
+αποτελέσματα στις πραγματικές μεταβλητές.
+
+ 
+procedure p(byreference x, y: integer);
+    
+local_x = x; // αντιγραφή τιμής
+    
+local_y = y; // σε τοπικές μεταβλητές
+    
+<body> // στο σώμα της body πρέπει να αλλάξουμε τα x, y σε local_x, local_y
+    x = local_x
+    y = local_y
+
+Για να είναι ίδιο το call by reference με το call by value-result θα πρέπει λογικά να βάλουμε σε δύο νέες μεταβλητές μέσα στη συνάρτησή μας τις τιμές των παραμέτρων που θέλουμε να χρησιμοποιήσουμε, να κάνουμε τις πράξεις και μετά να γυρίσουμε το αποτέλεσμα στις μεταβλητές που είναι by reference. Αυτό θα έχει θέμα όταν έχουμε ως είσοδο x, y την ίδια μεταβλητή. Έτσι, ενώ θα έπρεπε σύμφωνα με το call by reference να αλλάζει η τιμή της μεταβλητής μας και από το x και από το y αυτό δε γίνεται και άρα θα έχουμε άλλο αποτέλεσμα στο τέλος.
+ 
+
+4)
+fun bidlist list =
+let
+    fun findn n acc [] newlist = (acc,newlist)
+    | findn n acc ((x,value)::xs) newlist =
+        let
+            val check=x-n;
+            val newAcc=acc+value;
+        in
+            if check=0
+            then findn n newAcc xs newlist
+            else findn n acc xs ((x,value)::newlist)
+        end
+
+    fun findK result [] = result
+    | findK result ((x,value)::xs) =
+        if x>result
+        then findK x xs
+        else findK result xs
+
+    fun aux acc [] K max = acc
+        | aux acc list K max =
+        let
+            val newK=K+1;
+            val (sum,newlist)=findn K 0 list [];
+        in
+            if newK >= max
+            then (sum::acc)
+            else aux (sum::acc) newlist  newK max
+        end
+
+    fun reverse([],z) = z
+    | reverse (x::xs,z) = reverse (xs,x::z)
+
+    fun bidlistaux list =
+        let
+            val K=findK 0 list;
+            val newKappa=K+1;
+            val finalresult = aux [] list 0 newKappa;
+        in
+            finalresult
+        end
+        val res= bidlistaux list;
+        val res1= reverse(res,[]);
+in
+ res1
+end
+
+
+5) α)
+natural_number(0).
+natural_number(s(X)):- natural_number(X).
+
+sub(X, 0, X, 1).
+sub(0, Y, Y, 0).
+sub(s(X), s(Y), Z, Who):-
+    sub(X, Y, Z, Who).
+
+gcd(0, X, X).
+gcd(X, Y, Z):-
+    sub(X, Y, Res, Who),
+    (  Who =:= 1,gcd(Res, Y, Z);
+       gcd(Res, X, Z)),!.
+
+β) code from: https://stackoverflow.com/questions/5571558/counting-permutations-of-a-list-in-prolog?fbclid=IwAR2DZ72dxyivJCWS4KKH2-1fU1EfRczJMt3QQe_jDqjtX55G9ZUDCHR9C5k
+
+even_permutation( [], [] ).
+even_permutation( [X|T], Perm ) :-
+    even_permutation( T, Perm1 ),
+    insert_odd( X, Perm1, Perm ).
+even_permutation( [X|T], Perm ) :-
+    odd_permutation( T, Perm1 ),
+    insert_even( X, Perm1, Perm ).
+
+odd_permutation( [X|T], Perm ) :-
+    odd_permutation( T, Perm1 ),
+    insert_odd( X, Perm1, Perm ).
+odd_permutation( [X|T], Perm ) :-
+    even_permutation( T, Perm1 ),
+    insert_even( X, Perm1, Perm ).
+
+insert_odd( X, InList, [X|InList] ).
+insert_odd( X, [Y,Z|InList], [Y,Z|OutList] ) :-
+    insert_odd( X, InList, OutList ).
+
+insert_even( X, [Y|InList], [Y,X|InList] ).
+insert_even( X, [Y,Z|InList], [Y,Z|OutList] ) :-
+    insert_even( X, InList, OutList ).
+
+
+
+
+6) α)
+def countsum(A, k):
+    i = 0
+    j = 0
+    total = 0 
+    num = 0
+    length = len(A)
+    while i < length:
+        while total < k and i < length:
+            total = total + A[i]
+            i = i + 1        
+        while total >= k:
+            if total == k:
+                num = num + 1
+            total = total - A[j]
+            j = j + 1
+    return num
+
+β) Χρονική πολυπλοκότηα: Ο(n), n = μεγεθος λίστας καθώς είναι μαξ ένα πέρασμά της συνολικά μαξ n μετακινήσεις του i και n του j
+Xωρική πολυπλοκότητα: Ο(1) μιας και δε δεσμέυω τιποτα εκτός απο μεταβλητες.

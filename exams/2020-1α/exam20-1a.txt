@@ -1,0 +1,162 @@
+﻿Γλώσσες Προγραμματισμού - Τελικό Διαγώνισμα
+Ακαδημαϊκό Έτος 2019-2020
+
+
+
+1.Γραμματικές
+
+Η προσπάθεια είναι επιτυχημένη
+διότι ξεκινάμε από ένα <stmt> το οποίο μπορεί να είναι είτε ένα if χωρίς else είτε
+ένα μη τερματικό σύμβολο που παράγει μόνο ζευγάρια if-else. 
+Έτσι, κάθε else είτε βρίσκεται μέσα σε μια έκφραση if else 
+είτε βρίσκεται μετά από τα if χωρίς else και αντιστοιχεί στο τελευταίο if.
+
+
+2.Ερωτήσεις Κατανόησης
+
+α)
+fun s ls =   
+	let 
+		fun c [] a = a         
+		  | c (x :: r) a = c r ((x::r) :: a)   
+	in  
+		c ls []   
+	end
+
+
+β)
+p(X) :- member(X,[2,3,5]). 
+q(Y) :- member(Y,[17,24,42,51,71]). 
+ 
+r(X,Y) :- p(X),!, q(Y), mod(Y,X) =:= 0. 
+
+
+
+ΑΜ1 = 0
+ΑΜ2 = 6
+ΑΜ3 = 2
+
+γ)
+γ1) Στατική αποστολή	42 	6	42	6	42	6
+γ2) Δυναμική αποστολή	42	6	2	17	2	17
+
+δ)
+δ1) Στατικές εμβέλειες	6	2	6	42
+δ2) Δυναμικές εμβέλειες	6	6	42	2
+
+
+	 
+
+
+
+
+3.Πέρασμα παραμέτρων
+
+Υποερώτημα_____	a______	b______	c______	j______	k
+	α)	2	14	8	2	6	
+	β)	19	19	8	19	6	
+	γ)	2	14	8	2	6
+	δ)	24	24	30	24	6
+
+
+
+
+
+4.Προγραμματισμός σε ML
+
+fun oddeven [] = 0
+  | oddeven L =     
+	let        
+		(*Η traverse ελέγχει για κάθε στοιχείο της λίστας αν
+	΄	αφήνει το ίδιο υπόλοιπο με το 2.
+		Αν mod = 1 τότε έχουμε εναλλαγή μονού-ζυγού 
+		και αυξάνουμε το προηγοέμνο μέγιστο κατά 1.
+		Αν mod = 0 τότε έχουμε διαδοχικούς μονούς η ζυγούς
+		και αρχίζουμε εκ νέου το μέτρημα*)
+		fun traverse (cur_num, (prev_num, max_till_prev, curr_max)) =            
+			let                
+				val max_here = if ((cur_num + prev_num) mod 2) = 1
+							   then max_till_prev + 1
+							   else 1
+				(*Κάθε φορά ελέγχουμε αν το τρέχον μέγιστο
+				ξεπερνά το ολικό μέγιστο*)
+				val max = Int.max(curr_max, max_here)            
+			in                
+				(cur_num, max_here, max)            
+			end        
+		
+		(*Η foldl εφαρμόζει την traverse σε κάθε στοιχείο της λίστας*)
+		val (_, _, result) = foldl traverse (hd L, 0, 0) L   
+	in        
+		result    
+	end
+
+
+
+
+5.Προγραμματισμός σε Prolog
+
+/* Code taken from https://sites.google.com/site/prologsite/prolog-problems/2/solutions-2 */
+
+is_prime(2).
+is_prime(3).
+is_prime(P) :- 
+	integer(P), 
+	P > 3, 
+	P mod 2 =\= 0, 
+	\+ has_factor(P,3).  
+
+has_factor(N,L) :- N mod L =:= 0.
+has_factor(N,L) :- L * L < N, L2 is L + 2, has_factor(N,L2).
+
+/* My code */
+
+prime_start([],[]).
+prime_start(L,S) :-
+	append(Non_prime, Prime, L),
+	non_prime(Non_prime),
+	prime_continue(Prime, S).
+
+non_prime([]).	
+non_prime([H|T]):-
+	\+ is_prime(H),
+	non_prime(T).
+	
+prime_continue([],[]).	
+prime_continue([H|T1],S):-	
+	is_prime(H),
+	append(T3,Remaining,T1),
+	S = [[H|T3]|T2],
+	prime_continue(Remaining, T2).
+
+
+
+
+
+
+6. Προγραμματισμός σε Python
+
+α)Πολυπλοκότητα Ο(1)
+def has_edge_mat(M,u,v):
+    if M[u][v] == 1:
+        print("exists")
+    else:
+        print("does not exist")
+ 
+β) Πολυπλοκότητα Ο(n^2)
+def adj_mat_list(M):
+    k = len(M)
+    G = [[] for i in range(k)] 
+    for i in range(k): 
+        for j in range(len(M[i])): 
+            if M[i][j]== 1: 
+                G[i].append(j) 
+    return adjList 
+
+γ) Πολυπλοκότητα Ο(n)
+def has_edge_list(G,u,v):
+    for i in G[u]:
+	if i == v: 
+            print("exists")
+            return;
+    print("does not exist")

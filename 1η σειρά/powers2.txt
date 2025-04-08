@@ -1,0 +1,220 @@
+fun powers2 file =
+let
+ fun input file=
+ let
+  fun parse file =
+     let
+     fun next_int input =
+     Option.valOf (TextIO.scanStream (Int.scan StringCvt.DEC) input)
+       val stream = TextIO.openIn file
+     val n = next_int stream
+     (*val k = next_int stream*)
+     val _ = TextIO.inputLine stream
+         fun scanline 0 acc = acc
+          | scanline i acc =
+          let
+              val l = next_int stream
+          in
+              scanline (i - 1) (l :: acc)
+          end
+
+     fun scanall 0 acc  = acc
+     | scanall n acc =
+      let
+       val n1=next_int stream
+       val k1=next_int stream
+       val _ = TextIO.inputLine stream
+      in
+       scanall (n-1) (k1::n1::acc)
+      end
+
+     in
+   (n,rev(scanall n []))
+     end
+
+ (*val (n,k, list_a) = parse file *)
+  val (n,list_a)= parse file
+ in
+   (n,list_a)
+  (*(n,k) *)
+ end
+
+ (*N list size,K =number of colors ,list_a is the list itself*)
+ val (N,list_a)=(input file)
+ (*val n1=hd list_a
+ val k=tl list_a
+ val k1= hd k
+ val q= tl k
+ val n2 = hd q
+ val q1= tl q
+ val k2 = hd q1 *)
+
+
+ fun nth(xs, i) =
+  if i < 0
+  then raise Subscript
+  else
+   case xs of
+     [] => raise Subscript
+     | (x::xs) => if i=0 then x else nth(xs,i-1)
+ (*val lista=Array.fromList list_a*)
+
+ (*----------------------------------------------------------------*)
+ fun solve N K =
+ let
+  val arr=Array.array(K,1)
+  val array1=Array.array(K,0)
+  val var=Array.array(1,K)
+  val sum=Array.array(1,K)
+  val y=Array.array(1,0)
+
+  fun kloops q=
+    let
+      val x=Array.sub(var,0)
+      val z= Array.update(var,0,x-1)
+      val k=Array.sub(var,0)
+      val bool=0
+    in
+       if k>bool
+       then kloops k
+       else x
+    end
+
+  fun checkme ai sum n =
+   let
+    val k=n-sum
+    val wtf=k-ai
+   in
+    if wtf >= ai
+    then true
+    else false
+   end
+  fun updatearrayarr flag i ai =
+   if flag=true
+   then Array.update(arr,i,ai+ai)
+   else Array.update(arr,i,ai)
+
+
+  fun updatesum i n =
+   let
+    val sum0=Array.sub(sum,0)
+    val ai=Array.sub(arr,i)
+    val sum1=Array.update(sum,0,sum0+ai)
+    val sum2 = Array.sub(sum,0)
+    val flag1=checkme ai sum2 n
+    val ai1= updatearrayarr flag1 i ai
+    (*val ai1=Array.update(arr,i,ai*2)*)
+    val ai2=Array.sub(arr,i)
+    val sum2=Array.sub(sum,0)
+    val random=Array.update(array1,i,Array.sub(array1,i)+1)
+    val tempi=i
+    val bool=n
+   in
+    (*if ai2+sum2<=bool*)
+    if flag1=true
+    then updatesum tempi bool
+    else tempi
+   end
+
+  fun checkfirst i n =
+   let
+    val x=Array.sub(sum,0)
+    val y=Array.sub(arr,i)
+    val k=n-n-1
+   in
+    if x+y<=n
+    then updatesum i n
+    else k
+   end
+
+  fun createres q n =
+  let
+   val y=q-1
+   val x=checkfirst y n
+   val z=n
+  in
+   if y>0
+   then createres y z
+   else z
+  end
+ fun checksum N =
+  if Array.sub(sum,0)=N
+  then true
+  else false;
+
+ val temporary=K-1
+ val finalres = checkfirst temporary N
+ val w = createres temporary N
+ val results=Array.array(Array.sub(array1,temporary)+1,0)
+ fun kloops1 q  =
+  let
+   val x=Array.sub(var,0) (*IT HAS K*)
+   val z=Array.update(var,0,x-1) (*K-1*)
+   val k=Array.sub(var,0)
+   val index=Array.sub(array1,Array.sub(var,0))
+   val random=Array.update(results,index,Array.sub(results,index)+1)
+  in
+   if k>0
+   then kloops1 2
+   else x
+ end
+ fun listFromArray arr = List.tabulate(Array.length(arr), fn i => Array.sub(arr, i))
+ fun updatevar K =
+  let
+   val garbage=Array.update(var,0,K)
+   in
+    garbage
+  end
+ val updatek=updatevar K
+ val random1=kloops1 2
+
+ fun formresult N =
+  let
+   val tempo=listFromArray results
+   val finalresult=[]
+  in
+   if checksum N = true
+   then tempo
+   else finalresult
+  end
+ val finalresult=formresult N
+ in
+  finalresult
+ end
+
+ (*----------------------------------------------------------------*)
+
+ fun solveall [] curr =curr
+ | solveall (x::y::xs) curr = (solve x y)::(solveall xs curr)
+
+ fun totalprint lis=
+ let
+ fun printbegin q =
+  print("[");
+ fun printlist  xs =
+  print(String.concatWith "," (map Int.toString xs));
+ fun printend w =
+  print("]\n");
+ val x= printbegin 0
+ val y= printlist lis
+ val z=printend 0
+ in
+ z
+ end
+fun printall [] = print("")
+| printall (x::xs) =
+let
+ val w=totalprint x
+in
+ printall xs
+end
+
+
+ val result=solveall list_a []
+ val qpr=Array.fromList result
+ val k=Array.sub(qpr,0)
+ val q=printall result
+ in
+   print("")
+ (*print( (Int.toString (finalresult)) ^ "\n")*)
+ end

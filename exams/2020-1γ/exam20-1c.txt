@@ -1,0 +1,156 @@
+
+Γλώσσες Προγραμματισμού 1
+
+Ερώτηση 1) 
+α) η γραμματική όταν προσθέσουμε τους τελεστές της διαίρεσης και αφαίρεσης γίνεται:
+<expr> ::= <expr> + <mult> | <expr> - <mult> | <mult>
+<mult> ::= <mult> * <fact> | <mult> / <fact> | <fact>
+<fact> ::= (<expr>) | a | b | c
+β) για να προσθέσουμε τον τελεστή % λαμβάνουμε: 
+<expr> ::= <expr> + <mod> | <expr> - <mod> | <mod>
+<mod> ::= <mod> % <mult> | <mult>
+<mult> ::= <mult> * <fact> | <mult> / <fact> | <fact>
+<fact> ::= (<expr>) | a | b | c
+γ) τέλος προσθέτουμε τον τελεστή = και παίρνουμε:
+<equal> ::= <expr> = <equal> | <expr>
+<expr> ::= <expr> + <mod> | <expr> - <mod> | <mod>
+<mod> ::= <mod> % <mult> | <mult>
+<mult> ::= <mult> * <fact> | <mult> / <fact> | <fact>
+<fact> ::= (<expr>) | a | b | c
+
+2) 
+α)
+Όταν καλούμε sum(generator) ο generator κάνει yield μέχρι να "αδειάσει", έπειτα δεν έχει άλλα στοιχεία και γι αυτό η τιμή που επιστρέφεται είναι η κενή λίστα []. Μία λύση είναι να κρατήσουμε τα στοιχεία που κάνει yield ο generator σε μία λίστα l για να μπορούμε να κάνουμε iteration σε αυτή.
+
+
+def f(a):
+    
+	l = list(a)
+   
+ 	s = sum(l)
+    
+	return [x/s for x in l]
+
+β) fun check n k =
+	 k * k  > n orelse
+	n mod k <> 0 andolso 
+	check n (k+2)
+fun prime 2 = true
+	| prime n = 
+		n mod 2 andalso
+		check n 3
+γ) γ1) για static dispatch παίρνουμε: ΑΜ2 17 42 ΑΜ3 ΑΜ2 17, δηλαδή 4 17 42 9 4 17
+γ2) για dynamic dispatch παίρνουμε: ΑΜ2 17 42 ΑΜ3 42 ΑΜ3, δηλαδή 4 17 42 9 42 9
+δ) δ1) για static scopes παίρνουμε: ΑΜ2 ΑΜ3 ΑΜ3 ΑΜ2, δηλαδή 4 9 9 4
+δ2) για dynamic scopes παιρνουμε: ΑΜ3 ΑΜ3 ΑΜ3 ΑΜ2, δηλαδή 9 9 9 4
+
+3) Για να είναι όμοιο με το call by value-result θα αντιγράψουμε
+τις τιμές από τις πραγματικές μεταβλητές σε τοπικές μεταβλητές, και όταν τελειώσουμε θα ξαναγράψουμε τα 
+αποτελέσματα στις πραγματικές μεταβλητές.
+
+ 
+procedure p(byreference x, y: integer);
+    
+int local_x = x; // αντιγραφή τιμής
+    
+int local_y = y; // σε τοπικές μεταβλητές
+    
+<body> // στο σώμα της body πρέπει να αλλάξουμε τα x, y σε local_x, local_y
+    x = local_x
+    y = local_y
+ 
+4) fun reverselist [] Acc = Acc
+| reverselist (x::r) Acc = reverselist r (x::Acc)
+
+fun reconstruct l =
+let  
+  fun help l acc 0 = (l,acc) 
+    | help [] acc count = ([],acc)
+    | help (h::t) acc count =
+  let 
+    val newcount=count-1
+   in 
+    help t (h::acc) newcount
+  end
+  
+  fun reconstruct1 [] acc = acc
+    | reconstruct1 (h::t) acc =
+  let 
+    val k=h+1
+    val (x,y)=help (h::t) [] k
+    val temp=reverselist y []
+   in 
+    reconstruct1 x (temp::acc) 
+  end
+  
+  val result= reconstruct1 l []
+ in 
+  reverselist result []
+end
+val z= reconstruct [3,1,2,3,1,4,2,5,6,0,4,7,8,9,10]
+
+5)  α) max_data(Tree, Max) :-
+    find_max([Tree], 0, Max).
+
+find_max([], Max, Max).
+find_max([n(Data, List)| T], CurMax, Max) :-
+    (   Data > CurMax -> (
+                   NewMax is Data
+               );
+    NewMax is CurMax),
+    find_max(List, NewMax, Max1),
+    find_max(T, Max1, Max).
+
+β) find_depth(Tree, Data, Depth) :-
+    nonvar(Data) -> depths([Tree], Data, Depth, 1);
+    nonvar(Depth)-> inDepth([Tree], Data, Depth, 1).
+
+inDepth([], _, _, _).
+inDepth([n(Value, List)| T], Data, Depth, CurDepth) :-
+    curDepth = Depth -> Data is Value;
+    NewD is CurDepth + 1,
+    depths(List, Data, Depth, NewD),
+    depths(T, Data, Depth, CurDepth).
+
+depths([], _, _, _).
+depths([n(Value, List)| T], Data, Depth, CurDepth) :-
+    Data = Value -> Depth is CurDepth;
+    NewD is CurDepth + 1,
+    depths(List, Data, Depth, NewD),
+    depths(T, Data, Depth, CurDepth).
+6)α)
+
+
+def adj_list_mat(G):
+    
+	n = len(G)
+    
+	M = [[0]*n for _ in range(n)]
+    
+	for v in range(n):
+        
+		for neighbor in G[v]:
+            
+			M[v][neighbor] = 1
+    
+	return M
+
+Πολυπλοκότητα: Ο(n^2), n = len(G)
+
+
+
+β) def out_degree(M, u):
+ 
+	return sum(M[u])
+
+Πολυπλοκότητα: Ο(n), n = len(G)
+
+
+
+γ) def in_degree(M, u):
+      
+	return sum(M[i][u] for i in range(len(M)))
+
+Πολυπλοκότητα: Ο(n), n = len(G)
+
+
